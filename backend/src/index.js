@@ -33,8 +33,12 @@ const io = new Server(server, { cors: { origin: '*' } });
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+  });
+
   socket.on('sendMessage', (data) => {
-    io.emit('newMessage', data);
+    io.to(data.roomId).emit('newMessage', data);
   });
 
   socket.on('disconnect', () => {

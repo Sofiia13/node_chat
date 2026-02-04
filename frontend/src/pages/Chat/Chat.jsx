@@ -47,8 +47,15 @@ export const Chat = ({ currentUsername }) => {
   }, []);
 
   useEffect(() => {
+    if (selectedRoom?.id) {
+      socket.emit('joinRoom', selectedRoom.id);
+      setMessagesList([]);
+    }
+  }, [selectedRoom]);
+
+  useEffect(() => {
     const loadMessages = async () => {
-      if (!selectedRoom) return;
+      if (!selectedRoom?.id) return;
 
       try {
         const response = await api.get(`/api/${selectedRoom.id}/messages`);
@@ -91,11 +98,10 @@ export const Chat = ({ currentUsername }) => {
         text,
       });
       setMessage('');
-      socket.emit('sendMessage', response.data.message);
-      setMessagesList((prevMessages) => [
-        ...prevMessages,
-        response.data.message,
-      ]);
+      socket.emit('sendMessage', {
+        ...response.data.message,
+        roomId: selectedRoom.id,
+      });
     } catch (error) {
       console.error(error);
     }
