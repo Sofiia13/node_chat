@@ -26,6 +26,11 @@ const createRoom = async (req, res) => {
   const nextRooms = [...rooms, newRoom];
   await writeChat({ rooms: nextRooms });
 
+  const io = req.app.get('io');
+  if (io) {
+    io.emit('roomsUpdated', nextRooms);
+  }
+
   res.status(201).json({ message: 'Room created', room: newRoom });
 };
 
@@ -44,6 +49,11 @@ const renameRoom = async (req, res) => {
 
   await writeChat({ rooms });
 
+  const io = req.app.get('io');
+  if (io) {
+    io.emit('roomsUpdated', rooms);
+  }
+
   res.status(200).json({ message: 'Room renamed' });
 };
 
@@ -53,6 +63,11 @@ const deleteRoom = async (req, res) => {
   let rooms = await getRoomsUtil();
   rooms = rooms.filter((roomItem) => roomItem.id !== roomId);
   await writeChat({ rooms });
+
+  const io = req.app.get('io');
+  if (io) {
+    io.emit('roomsUpdated', rooms);
+  }
 
   res.status(200).json({ message: 'Room deleted' });
 };

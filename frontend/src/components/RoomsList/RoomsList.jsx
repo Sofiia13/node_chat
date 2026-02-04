@@ -14,7 +14,7 @@ export const RoomsList = ({
         <div key={room.id}>
           <Room
             roomName={room.name}
-            isSelected={selectedRoom.id === room.id}
+            isSelected={selectedRoom?.id === room.id}
             onSelect={() => onSelectRoom(room)}
             onDelete={() => onDeleteRoom(room)}
             onEdit={() => onEditRoom(room)}

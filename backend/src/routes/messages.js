@@ -40,6 +40,11 @@ const addMessage = async (req, res) => {
   room.messages.unshift(newMessage);
   await writeChat({ rooms });
 
+  const io = req.app.get('io');
+  if (io) {
+    io.to(roomId).emit('newMessage', newMessage);
+  }
+
   res.status(201).json({ message: 'Message added', data: newMessage });
 };
 

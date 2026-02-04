@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
@@ -21,20 +21,28 @@ export const Chat = ({ currentUsername }) => {
   const [messagesList, setMessagesList] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
 
-  useEffect(() => {
-    const loadRooms = async () => {
-      try {
-        const response = await api.get('/rooms');
-        const loadedRooms = response.data.rooms || [];
-        setRooms(loadedRooms);
-        setSelectedRoom(loadedRooms[0] || null);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    loadRooms();
+  const loadRooms = useCallback(async () => {
+    try {
+      const response = await api.get('/rooms');
+      const loadedRooms = response.data.rooms || [];
+      setRooms(loadedRooms);
+      setSelectedRoom((prevSelected) => {
+        if (!prevSelected) {
+          return loadedRooms[0] || null;
+        }
+        const stillExists = loadedRooms.find(
+          (room) => room.id === prevSelected.id,
+        );
+        return stillExists || loadedRooms[0] || null;
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }, []);
+
+  useEffect(() => {
+    loadRooms();
+  }, [loadRooms]);
 
   useEffect(() => {
     socket.on('newMessage', (data) => {
@@ -47,10 +55,32 @@ export const Chat = ({ currentUsername }) => {
   }, []);
 
   useEffect(() => {
-    if (selectedRoom?.id) {
-      socket.emit('joinRoom', selectedRoom.id);
-      setMessagesList([]);
+    socket.on('roomsUpdated', () => {
+      loadRooms();
+    });
+
+    return () => {
+      socket.off('roomsUpdated');
+    };
+  }, [loadRooms]);
+
+  useEffect(() => {
+    if (!selectedRoom?.id) {
+      return;
     }
+
+    setMessagesList([]);
+
+    const joinRoom = () => {
+      socket.emit('joinRoom', selectedRoom.id);
+    };
+
+    joinRoom();
+    socket.on('connect', joinRoom);
+
+    return () => {
+      socket.off('connect', joinRoom);
+    };
   }, [selectedRoom]);
 
   useEffect(() => {
@@ -67,7 +97,7 @@ export const Chat = ({ currentUsername }) => {
     };
 
     loadMessages();
-  }, [selectedRoom, messagesList.length]);
+  }, [selectedRoom]);
 
   const handleOpenAddRoom = () => setIsAddRoomOpen(true);
   const handleCloseAddRoom = () => {
@@ -98,10 +128,6 @@ export const Chat = ({ currentUsername }) => {
         text,
       });
       setMessage('');
-      socket.emit('sendMessage', {
-        ...response.data.message,
-        roomId: selectedRoom.id,
-      });
     } catch (error) {
       console.error(error);
     }
