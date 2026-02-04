@@ -1,39 +1,7 @@
 {
   "rooms": [
     {
-      "id": "general",
-      "name": "Chat 123",
-      "messages": [
-        {
-          "author": "admin",
-          "text": "My name is admin",
-          "time": "2026-02-04T13:04:36.744Z"
-        },
-        {
-          "author": "s-stanishevska",
-          "text": "hello",
-          "time": "2026-02-04T13:04:21.518Z"
-        },
-        {
-          "author": "Petro",
-          "text": "Don't worry",
-          "time": "2026-02-04T12:05:59.851Z"
-        },
-        {
-          "author": "s-stanishevska",
-          "text": "I want to be happy",
-          "time": "2026-02-04T12:04:15.621Z"
-        },
-        {
-          "author": "s-stanishevska",
-          "text": "You are happy",
-          "time": "2026-02-04T12:04:44.680Z"
-        }
-      ]
-    },
-    {
       "id": "9c28bcbe-e3c7-44f4-9355-5e9cabc54149",
-      "name": "New Chat",
       "messages": [
         {
           "author": "admin",
@@ -50,7 +18,8 @@
           "text": "Hello",
           "time": "2026-02-04T12:52:06.206Z"
         }
-      ]
+      ],
+      "name": "new romm"
     }
   ]
 }

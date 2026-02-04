@@ -14,6 +14,9 @@ export const Chat = ({ currentUsername }) => {
   const [message, setMessage] = useState('');
   const [isAddRoomOpen, setIsAddRoomOpen] = useState(false);
   const [newRoomName, setNewRoomName] = useState('');
+  const [isEditRoomOpen, setIsEditRoomOpen] = useState(false);
+  const [editingRoomId, setEditingRoomId] = useState(null);
+  const [editingRoomName, setEditingRoomName] = useState('');
   const [rooms, setRooms] = useState([]);
   const [messagesList, setMessagesList] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -65,6 +68,18 @@ export const Chat = ({ currentUsername }) => {
     setNewRoomName('');
   };
 
+  const handleOpenEditRoom = (room) => {
+    setEditingRoomId(room.id);
+    setEditingRoomName(room.name);
+    setIsEditRoomOpen(true);
+  };
+
+  const handleCloseEditRoom = () => {
+    setIsEditRoomOpen(false);
+    setEditingRoomId(null);
+    setEditingRoomName('');
+  };
+
   const handleSendMessage = async () => {
     const text = message.trim();
     if (!text || !selectedRoom) {
@@ -104,6 +119,39 @@ export const Chat = ({ currentUsername }) => {
     }
   };
 
+  const handleDeleteRoom = async (roomId) => {
+    try {
+      await api.delete(`/rooms/${roomId}`);
+      setRooms((prevRooms) => prevRooms.filter((room) => room.id !== roomId));
+      if (selectedRoom && selectedRoom.id === roomId) {
+        setSelectedRoom(rooms[0] || null);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleEditRoom = async () => {
+    const newName = editingRoomName.trim();
+    if (!newName) {
+      return;
+    }
+    try {
+      await api.put(`/rooms/${editingRoomId}`, { newName });
+      setRooms((prevRooms) =>
+        prevRooms.map((room) =>
+          room.id === editingRoomId ? { ...room, name: newName } : room,
+        ),
+      );
+      if (selectedRoom && selectedRoom.id === editingRoomId) {
+        setSelectedRoom((prevRoom) => ({ ...prevRoom, name: newName }));
+      }
+      handleCloseEditRoom();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className={styles.chat}>
       <h1>Chat Page</h1>
@@ -112,6 +160,8 @@ export const Chat = ({ currentUsername }) => {
         rooms={rooms}
         selectedRoom={selectedRoom}
         onSelectRoom={setSelectedRoom}
+        onDeleteRoom={(room) => handleDeleteRoom(room.id)}
+        onEditRoom={handleOpenEditRoom}
       />
 
       <Modal isOpen={isAddRoomOpen} onClose={handleCloseAddRoom}>
@@ -124,6 +174,19 @@ export const Chat = ({ currentUsername }) => {
         <div className={styles.modal__actions}>
           <Button onClick={handleCreateRoom}>Create</Button>
           <Button onClick={handleCloseAddRoom}>Cancel</Button>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isEditRoomOpen} onClose={handleCloseEditRoom}>
+        <h2 className={styles.modal__title}>Edit room</h2>
+        <Input
+          placeholder="Room name"
+          value={editingRoomName}
+          onChange={(e) => setEditingRoomName(e.target.value)}
+        />
+        <div className={styles.modal__actions}>
+          <Button onClick={handleEditRoom}>Save</Button>
+          <Button onClick={handleCloseEditRoom}>Cancel</Button>
         </div>
       </Modal>
 
