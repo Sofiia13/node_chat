@@ -1,0 +1,16 @@
+.room {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-block: 10px;
+  border-radius: 5px;
+  background-color: #d99c9c;
+  width: fit-content;
+  max-width: 80%;
+  word-wrap: break-word;
+
+  cursor: pointer;
+
+  &__selected {
+    background-color: #77b37e;
+  }
+}

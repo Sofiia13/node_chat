@@ -5,3 +5,14 @@
     margin-block: 20px;
   }
 }
+
+.modal__title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

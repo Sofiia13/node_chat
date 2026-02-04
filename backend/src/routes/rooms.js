@@ -23,9 +23,10 @@ const createRoom = async (req, res) => {
   const newRoom = { id, name, messages: [] };
 
   const rooms = await getRoomsUtil();
-  await writeChat({ rooms: [...rooms, newRoom] });
+  const nextRooms = [...rooms, newRoom];
+  await writeChat({ rooms: nextRooms });
 
-  res.status(201).json({ message: 'Room created' });
+  res.status(201).json({ message: 'Room created', room: newRoom });
 };
 
 const renameRoom = async (req, res) => {
