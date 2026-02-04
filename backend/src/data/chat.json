@@ -1,0 +1,25 @@
+{
+  "rooms": [
+    {
+      "id": "general",
+      "name": "Chat 123",
+      "messages": [
+        {
+          "author": "Petro",
+          "text": "Don't worry",
+          "time": "2026-02-04T12:05:59.851Z"
+        },
+        {
+          "author": "s-stanishevska",
+          "text": "I want to be happy",
+          "time": "2026-02-04T12:04:15.621Z"
+        },
+        {
+          "author": "s-stanishevska",
+          "text": "You are happy",
+          "time": "2026-02-04T12:04:44.680Z"
+        }
+      ]
+    }
+  ]
+}

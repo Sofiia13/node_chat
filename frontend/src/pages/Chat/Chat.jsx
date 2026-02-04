@@ -7,6 +7,7 @@ export const Chat = ({ currentUsername }) => {
   return (
     <div className={styles.chat}>
       <h1>Chat Page</h1>
+      <Button onClick={() => {}}>Add Room</Button>
       <div className={styles.chat__inputGroup}>
         <Input
           placeholder="Input your message..."
